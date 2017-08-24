@@ -3,7 +3,6 @@ import codecs
 import re
 import numpy as np
 import hmmlearn.hmm as hmm
-from sklearn.externals import joblib
 import matplotlib.pyplot as plt
 
 # reading and preprocessing data
@@ -91,6 +90,6 @@ plt.xticks(np.arange(N))
 plt.yticks(np.arange(N))
 plt.imshow(m.transmat_, cmap=plt.cm.Greys)
 
-# TODO: Deordertransition matrix
+# TODO: Reorder transition matrix
 # TODO: Compare next step prediction with simple MM and HMM
 # TODO: Ensemble management and HMM
