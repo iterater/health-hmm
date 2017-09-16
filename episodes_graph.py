@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 data_dir = 'data'  # basedir
 all_paths = []
 all_clusters = []
-with codecs.open(os.path.join(data_dir, 'Clusters_with_durations.txt'), encoding='utf-8') as f:
+with codecs.open(os.path.join(data_dir, 'Clusters_with_duration_KMeans7_L.txt'), encoding='utf-8') as f:
     current_cluster = 0
     for line in f:
         if re.match(r'\[(.*)\]', line):
@@ -28,7 +28,7 @@ with open(os.path.join(store_dir, 'nodes.csv'), 'w') as f:
     f.write('Id;Label;Cluster\n')
     f.writelines(['{0};{1};{2}\n'.format(i, all_paths[i], all_clusters[i]) for i in range(len(all_paths))])
 # storing edges
-boundary_similarity = 0.857
+boundary_similarity = 0.727
 with open(os.path.join(store_dir, 'edges_unique_path_q1.csv'), 'w') as f:
     f.write('Source;Target;Weight\n')
     for i in range(len(all_paths)):
@@ -53,9 +53,7 @@ unique_path_df['Size'] = unique_path_gr.count()
 unique_path_df.to_csv(os.path.join(store_dir, 'nodes_unique_path.csv'), sep=';')
 sns.distplot(edges['Weight'])
 np.percentile(edges['Weight'], [25, 50, 75]) 
-# All: Q3=0.857
-# Unique CP+Cluster: Q3=0.714
-# Unique CP: Q3=0.857
+# Unique CP: Q3=0.727
 
 # graph processing
 nodes = pd.read_csv(os.path.join(store_dir, 'nodes_unique_path.csv'), sep=';')                
@@ -67,8 +65,8 @@ for idx,rec in nodes.iterrows():
     G.add_node(idx, {'color': clrs[rec['Cluster']]})
 for idx,rec in edges.iterrows():
     G.add_edge(rec['Source'], rec['Target'], {'weight': rec['Weight']})
-pos = nx.spring_layout(G, iterations=500, weight='weight', scale=50)
-plt.figure(figsize=(10,10))S
+pos = nx.spring_layout(G, iterations=2000, weight='weight', scale=5)
+plt.figure(figsize=(10,10))
 nx.draw_networkx_edges(G, pos)
 nx.draw_networkx_nodes(G, pos, list(nodes.index), 
                        node_color=list(map(lambda cl_id: clrs[cl_id], nodes['Cluster'])),
