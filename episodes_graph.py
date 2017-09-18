@@ -61,20 +61,24 @@ edges = pd.read_csv(os.path.join(store_dir, 'edges_unique_path_q1.csv'), sep=';'
 n_clusters = nodes['Cluster'].max() + 1
 clrs = plt.get_cmap('tab20')(np.linspace(0, 1, n_clusters))
 G = nx.Graph()
+w_threshold = 0.8
 for idx,rec in nodes.iterrows():
     G.add_node(idx, {'color': clrs[rec['Cluster']]})
 for idx,rec in edges.iterrows():
-    G.add_edge(rec['Source'], rec['Target'], {'weight': rec['Weight']})
-pos = nx.spring_layout(G, iterations=2000, weight='weight', scale=5)
+    if rec['Weight'] >= w_threshold:
+        G.add_edge(rec['Source'], rec['Target'], 
+                   {'weight': (rec['Weight'] - w_threshold * 0.95) * 3})
+pos = nx.spring_layout(G, iterations=2000, weight='weight', scale=50)
 plt.figure(figsize=(10,10))
-nx.draw_networkx_edges(G, pos)
+nx.draw_networkx_edges(G, pos, edge_color='lightgray')
 nx.draw_networkx_nodes(G, pos, list(nodes.index), 
                        node_color=list(map(lambda cl_id: clrs[cl_id], nodes['Cluster'])),
-                       node_size=list(nodes['Size'] * 15))
-sizelim = 40
+                       node_size=list(np.log(nodes['Size']*0.5 + 3) * 80))
+sizelim = 50
 lb_ds = nodes['Label']
 lb_ds[nodes['Size'] < sizelim] = ''
 nx.draw_networkx_labels(G, pos, labels=lb_ds)
+plt.axis('off')
 
 # TODO: Complexity of decision tree for clusters dividing with interpretation - quality measure.
 # TODO: CP structure and clinical cases relationshop
